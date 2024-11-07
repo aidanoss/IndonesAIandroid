@@ -27,6 +27,9 @@ dependencies:
   # Internationalization
   intl: ^0.18.1
   firebase_auth_web: 5.13.2
+  # File and Image Picking
+  file_picker: ^6.1.1
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
