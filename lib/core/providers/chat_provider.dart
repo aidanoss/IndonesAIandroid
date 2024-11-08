@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../constants/app_constants.dart';
 
 class ChatProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore;

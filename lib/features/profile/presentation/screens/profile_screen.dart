@@ -1,199 +1,229 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                AppConstants.profileLabel,
-                style: TextStyle(
-                  color: AppTheme.indonesianWhite,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              background: Container(
+      appBar: AppBar(
+        title: Text(
+          'Profil',
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: textColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
                     colors: [
-                      AppTheme.indonesianRed,
-                      AppTheme.indonesianRed.withOpacity(0.8),
+                      AppTheme.primaryRed,
+                      AppTheme.primaryRed.withOpacity(0.7),
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
+                width: 120,
+                height: 120,
                 child: const Center(
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppTheme.indonesianWhite,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: AppTheme.indonesianRed,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              _buildSection(
-                context: context,
-                title: AppConstants.preferences,
-                items: [
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.translate,
-                    title: AppConstants.languageSettings,
-                    subtitle: AppConstants.indonesian,
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.record_voice_over,
-                    title: AppConstants.voiceSettings,
-                    subtitle: AppConstants.enableVoice,
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                ],
-              ),
-              _buildSection(
-                context: context,
-                title: AppConstants.savedChats,
-                items: [
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.history,
-                    title: 'Riwayat Obrolan',
-                    subtitle: 'Lihat obrolan sebelumnya',
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.bookmark,
-                    title: 'Obrolan Favorit',
-                    subtitle: 'Obrolan yang ditandai',
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                ],
-              ),
-              _buildSection(
-                context: context,
-                title: AppConstants.about,
-                items: [
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.info_outline,
-                    title: 'Tentang ${AppConstants.appName}',
-                    subtitle: 'Versi ${AppConstants.appVersion}',
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                  _buildListTile(
-                    context: context,
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Kebijakan Privasi',
-                    subtitle: 'Informasi penggunaan data',
-                    onTap: () {
-                      // Akan diimplementasikan nanti
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Akan diimplementasikan nanti
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[100],
-                    foregroundColor: AppTheme.indonesianRed,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    AppConstants.logout,
+                  child: Text(
+                    'U',
                     style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 48,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-            ]),
+              const SizedBox(height: 16),
+              Text(
+                'Pengguna Anonim',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
+              Text(
+                'Bergabung sejak: ${DateTime.now().year}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: subtextColor,
+                ),
+              ),
+              const SizedBox(height: 32),
+              _buildProfileSection(
+                context,
+                title: 'Informasi Akun',
+                children: [
+                  _buildProfileTile(
+                    context,
+                    icon: Icons.person_outline,
+                    title: 'Nama Pengguna',
+                    subtitle: 'Pengguna Anonim',
+                  ),
+                  _buildProfileTile(
+                    context,
+                    icon: Icons.email_outlined,
+                    title: 'Email',
+                    subtitle: 'Tidak tersedia',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildProfileSection(
+                context,
+                title: 'Preferensi',
+                children: [
+                  _buildProfileTile(
+                    context,
+                    icon: Icons.language,
+                    title: 'Bahasa',
+                    subtitle: 'Indonesia',
+                    onTap: () {
+                      // TODO: Implement language selection
+                    },
+                  ),
+                  _buildProfileTile(
+                    context,
+                    icon: Icons.notifications_outlined,
+                    title: 'Notifikasi',
+                    subtitle: 'Aktif',
+                    onTap: () {
+                      // TODO: Implement notification settings
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Implement profile update
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Fitur dalam pengembangan')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryRed,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32, 
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'Perbarui Profil',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildSection({
-    required BuildContext context,
+  Widget _buildProfileSection(
+    BuildContext context, {
     required String title,
-    required List<Widget> items,
+    required List<Widget> children,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.bold,
-                ),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
           ),
         ),
-        Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          shape: RoundedRectangleBorder(
+        Container(
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.grey[850] : Colors.white,
             borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          child: Column(
-            children: items,
-          ),
+          child: Column(children: children),
         ),
       ],
     );
   }
 
-  Widget _buildListTile({
-    required BuildContext context,
+  Widget _buildProfileTile(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+
     return ListTile(
-      leading: Icon(icon, color: AppTheme.indonesianRed),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: const Icon(Icons.chevron_right),
+      leading: Icon(icon, color: AppTheme.primaryRed),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: textColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: subtextColor,
+        ),
+      ),
+      trailing: onTap != null 
+        ? Icon(Icons.chevron_right, color: subtextColor) 
+        : null,
       onTap: onTap,
     );
   }

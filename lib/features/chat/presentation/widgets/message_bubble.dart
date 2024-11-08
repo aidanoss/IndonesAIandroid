@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
 
 class MessageBubble extends StatelessWidget {
   final String message;
@@ -10,138 +7,85 @@ class MessageBubble extends StatelessWidget {
   final DateTime timestamp;
 
   const MessageBubble({
-    super.key,
+    Key? key,
     required this.message,
     required this.isUser,
     required this.timestamp,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final timeString = DateFormat('HH:mm').format(timestamp);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isUser) ...[
-            CircleAvatar(
-              backgroundColor: AppTheme.indonesianRed.withOpacity(0.1),
-              child: const Icon(
-                Icons.smart_toy_outlined,
-                color: AppTheme.indonesianRed,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
-              ),
-              decoration: BoxDecoration(
-                color: isUser
-                    ? AppTheme.indonesianRed
-                    : Theme.of(context).cardColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isUser ? 16 : 4),
-                  bottomRight: Radius.circular(isUser ? 4 : 16),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    offset: const Offset(0, 2),
-                    blurRadius: 4,
-                    color: Colors.black.withOpacity(0.1),
-                  ),
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        decoration: BoxDecoration(
+          gradient: isUser 
+            ? LinearGradient(
+                colors: [
+                  AppTheme.primaryRed,
+                  AppTheme.primaryRed.withOpacity(0.8),
                 ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: isUser
-                        ? Text(
-                            message,
-                            style: const TextStyle(
-                              color: AppTheme.indonesianWhite,
-                              fontSize: 16,
-                            ),
-                          )
-                        : MarkdownBody(
-                            data: message,
-                            styleSheet: MarkdownStyleSheet(
-                              p: const TextStyle(
-                                fontSize: 16,
-                              ),
-                              code: TextStyle(
-                                backgroundColor: Colors.grey.withOpacity(0.1),
-                                fontFamily: 'monospace',
-                              ),
-                            ),
-                          ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 8,
-                      bottom: 4,
-                      left: 8,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          timeString,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isUser
-                                ? AppTheme.indonesianWhite.withOpacity(0.7)
-                                : Colors.grey,
-                          ),
-                        ),
-                        if (!isUser) ...[
-                          const SizedBox(width: 8),
-                          InkWell(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(AppConstants.messageCopied),
-                                  duration: Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                            child: const Icon(
-                              Icons.copy,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : LinearGradient(
+                colors: [
+                  isDarkMode ? Colors.grey[800]! : Colors.white, 
+                  isDarkMode ? Colors.grey[750]! : Colors.grey[100]!
                 ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: isUser ? const Radius.circular(16) : Radius.zero,
+            bottomRight: isUser ? Radius.zero : const Radius.circular(16),
           ),
-          if (isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              backgroundColor: AppTheme.indonesianRed.withOpacity(0.1),
-              child: const Icon(
-                Icons.person_outline,
-                color: AppTheme.indonesianRed,
-                size: 20,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: !isUser && !isDarkMode 
+            ? Border.all(color: Colors.grey[200]!, width: 1) 
+            : null,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: isUser 
+            ? CrossAxisAlignment.end 
+            : CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: TextStyle(
+                color: isUser ? Colors.white : textColor,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}',
+              style: TextStyle(
+                color: isUser 
+                  ? Colors.white.withOpacity(0.7) 
+                  : subtextColor,
+                fontSize: 12,
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }

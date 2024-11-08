@@ -1,127 +1,210 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Indonesian flag colors
-  static const Color indonesianRed = Color(0xFFFF0000);
-  static const Color indonesianWhite = Color(0xFFFFFFFF);
+  // Color Palette
+  static const Color primaryRed = Color(0xFFFF0000);
+  static const Color backgroundLight = Color(0xFFFFFFFF);
+  
+  // Dark Mode Colors
+  static const Color backgroundDark = Color(0xFF121212);
+  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color textLight = Color(0xFFE0E0E0);
+  static const Color textMedium = Color(0xFFA0A0A0);
+  static const Color accentDark = Color(0xFFAA0000);
+
+  // Gradient Definitions
+  static const LinearGradient redGradient = LinearGradient(
+    colors: [
+      primaryRed,
+      primaryRed,
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient darkGradient = LinearGradient(
+    colors: [
+      surfaceDark,
+      backgroundDark,
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // Text Styles
   static const String fontFamily = 'Poppins';
 
-  static const TextTheme _textTheme = TextTheme(
-    displayLarge:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.bold),
-    displayMedium:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.bold),
-    displaySmall:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.bold),
-    headlineLarge:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600),
-    headlineMedium:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600),
-    headlineSmall:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600),
-    titleLarge: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600),
-    titleMedium: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
-    titleSmall: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
-    bodyLarge: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.normal),
-    bodyMedium:
-        TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.normal),
-    bodySmall: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.normal),
-    labelLarge: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
-    labelMedium: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
-    labelSmall: TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
-  );
+  static TextTheme _createTextTheme(Color primaryColor, Color secondaryColor) {
+    return TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: fontFamily, 
+        fontWeight: FontWeight.bold,
+        color: primaryColor,
+      ),
+      bodyMedium: TextStyle(
+        fontFamily: fontFamily, 
+        fontWeight: FontWeight.normal,
+        color: secondaryColor,
+      ),
+      titleMedium: TextStyle(
+        fontFamily: fontFamily, 
+        fontWeight: FontWeight.w600,
+        color: primaryColor,
+      ),
+    );
+  }
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
+    fontFamily: fontFamily,
+    
     colorScheme: ColorScheme.light(
-      primary: indonesianRed,
-      secondary: indonesianRed.withOpacity(0.8),
-      surface: indonesianWhite,
-      onPrimary: indonesianWhite,
-      onSecondary: indonesianWhite,
+      primary: primaryRed,
+      secondary: primaryRed.withOpacity(0.8),
+      surface: backgroundLight,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
     ),
-    scaffoldBackgroundColor: indonesianWhite,
-    textTheme: _textTheme,
+
+    scaffoldBackgroundColor: backgroundLight,
+    textTheme: _createTextTheme(Colors.black87, Colors.black54),
+
     appBarTheme: const AppBarTheme(
-      backgroundColor: indonesianRed,
-      foregroundColor: indonesianWhite,
+      backgroundColor: backgroundLight,
+      foregroundColor: Colors.black87,
       elevation: 0,
       centerTitle: true,
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: indonesianWhite,
-      indicatorColor: indonesianRed.withOpacity(0.1),
-      labelTextStyle: WidgetStateProperty.all(
-        const TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        color: Colors.black87,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
       ),
     ),
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: backgroundLight,
+      selectedItemColor: primaryRed,
+      unselectedItemColor: Colors.grey[600],
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: indonesianRed,
-      foregroundColor: indonesianWhite,
-    ),
+
     inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.grey[100],
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: indonesianRed),
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(color: primaryRed, width: 1.5),
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     ),
   );
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    fontFamily: fontFamily,
+    
     colorScheme: ColorScheme.dark(
-      primary: indonesianRed.withOpacity(0.8),
-      secondary: indonesianRed.withOpacity(0.6),
-      surface: Colors.grey[850]!,
-      onPrimary: indonesianWhite,
-      onSecondary: indonesianWhite,
+      primary: accentDark,
+      secondary: accentDark.withOpacity(0.8),
+      surface: surfaceDark,
+      onPrimary: textLight,
+      onSecondary: textLight,
     ),
-    scaffoldBackgroundColor: Colors.grey[900],
-    textTheme: _textTheme,
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.grey[850],
-      foregroundColor: indonesianWhite,
+
+    scaffoldBackgroundColor: backgroundDark,
+    textTheme: _createTextTheme(textLight, textMedium),
+
+    appBarTheme: const AppBarTheme(
+      backgroundColor: surfaceDark,
+      foregroundColor: textLight,
       elevation: 0,
       centerTitle: true,
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: Colors.grey[850],
-      indicatorColor: indonesianRed.withOpacity(0.2),
-      labelTextStyle: WidgetStateProperty.all(
-        const TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w500),
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        color: textLight,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
       ),
     ),
+
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: surfaceDark,
+      selectedItemColor: accentDark,
+      unselectedItemColor: textMedium,
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
+    ),
+
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: surfaceDark,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(color: accentDark, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    ),
+
     cardTheme: CardTheme(
+      color: surfaceDark,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: indonesianRed.withOpacity(0.8),
-      foregroundColor: indonesianWhite,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: indonesianRed.withOpacity(0.8)),
-      ),
-    ),
   );
+
+  // IndonesAI Banner Widget
+  static Widget createBanner({
+    bool isDarkMode = false,
+    double height = 60,
+    double fontSize = 20,
+  }) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        gradient: isDarkMode 
+          ? const LinearGradient(
+              colors: [surfaceDark, backgroundDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
+          : LinearGradient(
+              colors: [primaryRed, primaryRed.withOpacity(0.8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          'IndonesAI',
+          style: TextStyle(
+            color: isDarkMode ? textLight : Colors.white,
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
+    );
+  }
 }

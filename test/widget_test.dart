@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:indones_ai/main.dart';
+import 'package:indonesai/main.dart';  // Changed from indones_ai to indonesai
 
 // Fake implementations for testing
 class FakeFlutterTts implements FlutterTts {

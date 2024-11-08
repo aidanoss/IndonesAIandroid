@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_constants.dart';
+
 import '../../../../core/theme/app_theme.dart';
 import '../../../chat/presentation/screens/chat_screen.dart';
-import '../../../profile/presentation/screens/profile_screen.dart';
-import '../../../settings/presentation/screens/settings_screen.dart';
-import '../../../help/presentation/screens/help_screen.dart';
+import '../../../analisis/presentation/screens/analysis_screen.dart';
+import '../../../suara/presentation/screens/voice_screen.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  const MainNavigation({Key? key}) : super(key: key);
 
   @override
-  State<MainNavigation> createState() => _MainNavigationState();
+  MainNavigationState createState() => MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
+class MainNavigationState extends State<MainNavigation> {
+  int _currentIndex = 0;
 
-  final List<Widget> _screens = [
+  final List<Widget> _pages = [
     const ChatScreen(),
-    const ProfileScreen(),
-    const SettingsScreen(),
-    const HelpScreen(),
+    const AnalysisScreen(),
+    const VoiceScreen(),
+  ];
+
+  final List<BottomNavItem> _navItems = [
+    BottomNavItem(
+      icon: Icons.chat_bubble_outline,
+      activeIcon: Icons.chat_bubble,
+      label: 'Chat',
+    ),
+    BottomNavItem(
+      icon: Icons.image_outlined,
+      activeIcon: Icons.image,
+      label: 'Analisis',
+    ),
+    BottomNavItem(
+      icon: Icons.mic_none,
+      activeIcon: Icons.mic,
+      label: 'Suara',
+    ),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _currentIndex = index;
     });
   }
 
@@ -35,60 +51,68 @@ class _MainNavigationState extends State<MainNavigation> {
 
     return Scaffold(
       body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+        index: _currentIndex,
+        children: _pages,
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
-        backgroundColor:
-            isDarkMode ? Colors.grey[900] : AppTheme.indonesianWhite,
-        elevation: 8,
-        shadowColor: Colors.black26,
-        height: 65,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        animationDuration: const Duration(milliseconds: 500),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline),
-            selectedIcon: Icon(
-              Icons.chat_bubble,
-              color: AppTheme.indonesianRed,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.grey[850] : Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
-            label: AppConstants.chatLabel,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(
-              Icons.person,
-              color: AppTheme.indonesianRed,
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _navItems.map((item) {
+                final index = _navItems.indexOf(item);
+                final isActive = _currentIndex == index;
+
+                return GestureDetector(
+                  onTap: () => _onItemTapped(index),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isActive ? item.activeIcon : item.icon,
+                        color:
+                            isActive ? AppTheme.primaryRed : Colors.grey[600],
+                        size: 24,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          color:
+                              isActive ? AppTheme.primaryRed : Colors.grey[600],
+                          fontSize: 12,
+                          fontWeight:
+                              isActive ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
-            label: AppConstants.profileLabel,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(
-              Icons.settings,
-              color: AppTheme.indonesianRed,
-            ),
-            label: AppConstants.settingsLabel,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.help_outline),
-            selectedIcon: Icon(
-              Icons.help,
-              color: AppTheme.indonesianRed,
-            ),
-            label: AppConstants.helpLabel,
-          ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  @override
-  void dispose() {
-    // Clean up any controllers or streams if needed
-    super.dispose();
-  }
+class BottomNavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+
+  BottomNavItem(
+      {required this.icon, required this.activeIcon, required this.label});
 }

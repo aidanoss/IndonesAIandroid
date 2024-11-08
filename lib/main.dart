@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -10,16 +9,14 @@ import 'core/theme/app_theme.dart';
 import 'core/providers/app_provider.dart';
 import 'core/providers/chat_provider.dart';
 import 'core/providers/chat_history_provider.dart';
-import 'features/navigation/presentation/screens/main_navigation.dart';
+import 'features/welcome/presentation/screens/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Initialize Firebase with web configuration
-    await Firebase.initializeApp(
-      options: FirebaseConfig.firebaseOptions,
-    );
+    // Initialize Firebase with comprehensive error handling
+    await FirebaseConfig.initializeFirebase();
 
     // Initialize Text-to-Speech
     final flutterTts = FlutterTts();
@@ -31,14 +28,15 @@ void main() async {
     final firestore = FirebaseFirestore.instance;
     final auth = FirebaseAuth.instance;
 
-    // Ensure user is signed in anonymously
-    if (auth.currentUser == null) {
-      try {
+    // Ensure user is signed in anonymously with robust error handling
+    try {
+      if (auth.currentUser == null) {
         await auth.signInAnonymously();
         debugPrint('Signed in anonymously');
-      } catch (e) {
-        debugPrint('Anonymous sign-in error: $e');
       }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Anonymous sign-in error: ${e.code} - ${e.message}');
+      // Optionally, handle specific auth errors
     }
 
     runApp(MyApp(
@@ -89,7 +87,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: appProvider.themeMode,
-            home: const MainNavigation(),
+            home: const WelcomeScreen(),
             builder: (context, child) {
               // Apply font scale based on settings
               final mediaQuery = MediaQuery.of(context);
@@ -115,35 +113,68 @@ class ErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: Scaffold(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 64,
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.primaryRed,
+                        AppTheme.primaryRed.withOpacity(0.7),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 64,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 const Text(
                   AppConstants.errorGeneric,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(
+                    fontSize: 18, 
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
                     // Restart app
                     main();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.indonesianRed,
-                    foregroundColor: AppTheme.indonesianWhite,
+                    backgroundColor: AppTheme.primaryRed,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32, 
+                      vertical: 12,
+                    ),
                   ),
-                  child: const Text('Coba Lagi'),
+                  child: const Text(
+                    'Coba Lagi',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),

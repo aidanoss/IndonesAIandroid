@@ -1,168 +1,111 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_constants.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/providers/app_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  SettingsScreenState createState() => SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isDarkMode = false;
-  bool _isVoiceEnabled = true;
-  double _voiceSpeed = 1.0;
-  double _voicePitch = 1.0;
-  String _selectedFontSize = AppConstants.mediumFont;
+class SettingsScreenState extends State<SettingsScreen> {
+  String _selectedLanguage = 'Indonesia';
 
   @override
   Widget build(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          AppConstants.settingsLabel,
+        title: Text(
+          'Pengaturan',
           style: TextStyle(
-            color: AppTheme.indonesianWhite,
-            fontWeight: FontWeight.bold,
+            color: textColor,
+            fontWeight: FontWeight.w600,
           ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: textColor),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          _buildSection(
-            title: AppConstants.themeSettings,
+          _buildSettingsSection(
+            title: 'Tampilan',
             children: [
-              SwitchListTile(
-                title: const Text(AppConstants.darkMode),
-                subtitle: Text(_isDarkMode
-                    ? AppConstants.darkMode
-                    : AppConstants.lightMode),
-                value: _isDarkMode,
-                onChanged: (value) {
-                  setState(() {
-                    _isDarkMode = value;
-                  });
-                  // Akan diimplementasikan dengan provider
-                },
-                secondary: Icon(
-                  _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                  color: AppTheme.indonesianRed,
-                ),
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.format_size,
-                  color: AppTheme.indonesianRed,
-                ),
-                title: const Text(AppConstants.fontSizeSettings),
-                subtitle: Text(_selectedFontSize),
-                trailing: DropdownButton<String>(
-                  value: _selectedFontSize,
-                  underline: const SizedBox(),
-                  items: [
-                    AppConstants.smallFont,
-                    AppConstants.mediumFont,
-                    AppConstants.largeFont,
-                  ].map((size) {
-                    return DropdownMenuItem(
-                      value: size,
-                      child: Text(size),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedFontSize = value;
-                      });
-                      // Akan diimplementasikan dengan provider
-                    }
+              _buildSettingsTile(
+                icon: Icons.brightness_6,
+                title: 'Mode Gelap',
+                trailing: Switch(
+                  value: appProvider.themeMode == ThemeMode.dark,
+                  activeColor: AppTheme.primaryRed,
+                  onChanged: (bool value) {
+                    appProvider.toggleThemeMode();
                   },
                 ),
               ),
-            ],
-          ),
-          _buildSection(
-            title: AppConstants.voiceSettings,
-            children: [
-              SwitchListTile(
-                title: const Text(AppConstants.enableVoice),
-                value: _isVoiceEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    _isVoiceEnabled = value;
-                  });
-                  // Akan diimplementasikan dengan provider
-                },
-                secondary: const Icon(
-                  Icons.record_voice_over,
-                  color: AppTheme.indonesianRed,
+              _buildSettingsTile(
+                icon: Icons.text_fields,
+                title: 'Ukuran Teks',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove, color: subtextColor),
+                      onPressed: () => appProvider.decreaseFontSize(),
+                    ),
+                    Text(
+                      '${appProvider.fontSizeScale.toStringAsFixed(1)}x',
+                      style: TextStyle(color: textColor),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add, color: subtextColor),
+                      onPressed: () => appProvider.increaseFontSize(),
+                    ),
+                  ],
                 ),
               ),
-              if (_isVoiceEnabled) ...[
-                ListTile(
-                  leading: const Icon(
-                    Icons.speed,
-                    color: AppTheme.indonesianRed,
-                  ),
-                  title: const Text(AppConstants.voiceSpeed),
-                  subtitle: Slider(
-                    value: _voiceSpeed,
-                    min: 0.5,
-                    max: 2.0,
-                    divisions: 6,
-                    label: _voiceSpeed.toString(),
-                    onChanged: (value) {
-                      setState(() {
-                        _voiceSpeed = value;
-                      });
-                      // Akan diimplementasikan dengan provider
-                    },
-                  ),
+              _buildSettingsTile(
+                icon: Icons.language,
+                title: 'Bahasa',
+                trailing: DropdownButton<String>(
+                  value: _selectedLanguage,
+                  dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                  underline: Container(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedLanguage = newValue!;
+                    });
+                  },
+                  items: ['Indonesia', 'English']
+                    .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value, 
+                          style: TextStyle(color: textColor),
+                        ),
+                      );
+                    }).toList(),
                 ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.tune,
-                    color: AppTheme.indonesianRed,
-                  ),
-                  title: const Text(AppConstants.voicePitch),
-                  subtitle: Slider(
-                    value: _voicePitch,
-                    min: 0.5,
-                    max: 2.0,
-                    divisions: 6,
-                    label: _voicePitch.toString(),
-                    onChanged: (value) {
-                      setState(() {
-                        _voicePitch = value;
-                      });
-                      // Akan diimplementasikan dengan provider
-                    },
-                  ),
-                ),
-              ],
+              ),
             ],
           ),
-          _buildSection(
-            title: AppConstants.languageSettings,
+          const SizedBox(height: 16),
+          _buildSettingsSection(
+            title: 'Privasi',
             children: [
-              ListTile(
-                leading: const Icon(
-                  Icons.translate,
-                  color: AppTheme.indonesianRed,
-                ),
-                title: const Text('Bahasa'),
-                subtitle: const Text('Bahasa Indonesia'),
-                trailing: const Icon(Icons.check),
-                onTap: () {
-                  // Saat ini hanya mendukung Bahasa Indonesia
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                          'Saat ini hanya tersedia dalam Bahasa Indonesia'),
-                    ),
-                  );
-                },
+              _buildSettingsTile(
+                icon: Icons.privacy_tip_outlined,
+                title: 'Kebijakan Privasi',
+                onTap: () => _showPrivacyDialog(),
               ),
             ],
           ),
@@ -171,33 +114,134 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection({
+  void _showPrivacyDialog() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+          title: Text(
+            'Kebijakan Privasi', 
+            style: TextStyle(color: textColor),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Informasi Penggunaan Data:',
+                  style: TextStyle(color: textColor),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '• Data yang Anda kirim digunakan untuk meningkatkan layanan AI',
+                  style: TextStyle(color: subtextColor),
+                ),
+                Text(
+                  '• Semua percakapan bersifat anonim',
+                  style: TextStyle(color: subtextColor),
+                ),
+                Text(
+                  '• Data tidak dibagikan dengan pihak ketiga',
+                  style: TextStyle(color: subtextColor),
+                ),
+                Text(
+                  '• Anda dapat menghapus riwayat percakapan kapan saja',
+                  style: TextStyle(color: subtextColor),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Kami berkomitmen melindungi privasi Anda.',
+                  style: TextStyle(color: textColor),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Tutup', 
+                style: TextStyle(color: AppTheme.primaryRed),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSettingsSection({
     required String title,
     required List<Widget> children,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.bold,
-                ),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
           ),
         ),
-        Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          shape: RoundedRectangleBorder(
+        Container(
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.grey[850] : Colors.white,
             borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
       ],
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+
+    return ListTile(
+      leading: Icon(
+        icon, 
+        color: AppTheme.primaryRed,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: textColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: trailing ?? 
+        (onTap != null 
+          ? Icon(Icons.chevron_right, color: subtextColor) 
+          : null),
+      onTap: onTap,
     );
   }
 }
